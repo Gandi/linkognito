@@ -1,0 +1,32 @@
+{
+
+  "manifest_version": 2,
+  "name": "Linkognito",
+  "version": "1.0",
+
+  "description": "Open links in incognito mode",
+
+  "background": {
+    "scripts": ["src/background/index.js"]
+  },
+
+  "permissions": [
+    "tabs"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*/*",
+        "http://*/*",
+        "file://*/*"
+      ],
+      "js": [
+        "src/linkognito.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+  ]
+
+}
