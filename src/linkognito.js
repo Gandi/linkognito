@@ -1,24 +1,57 @@
 var browser = chrome || browser;
-//var links = document.querySelectorAll('a[target="linkognito"]');
-var links = document.querySelectorAll('a');
 
-var callback = function(url) {
-  return function(resp) {
-    if (resp) {
-        console.log('Opened URL: ', url, ' in a new incognito window.');
+// define matches methode according to browser
+var elementProto = Element.prototype;
+var matchesFn = ['webkit', 'ms', 'moz', 'o'].reduce((func, prefix) => {
+  var prefixedFuncName = `${prefix}MatchesSelector`;
+  if (elementProto.hasOwnProperty(prefixedFuncName)) {
+    return elementProto[prefixedFuncName];
+  }
+
+  return func;
+}, elementProto.matches);
+
+// find node in terms of selector
+function passedThrough(evt, selector) {
+  var currentNode = evt.target;
+  var stopAt = evt.currentTarget;
+
+  while (true) {
+    if (matchesFn.call(currentNode, selector)) {
+      return currentNode;
+    } else if (currentNode !== stopAt && currentNode !== document.body) {
+      currentNode = currentNode.parentNode;
     } else {
-        console.error('Failed to open the URL: ', url);
+      return false;
     }
   }
 }
 
-for (var i = 0; i < links.length; i++) {
-  links.item(i).addEventListener('click', function(evt) {
-    evt.preventDefault();
-    var targetElement = evt.target;
-
-    if (targetElement !== null) {
-      browser.runtime.sendMessage({ url: evt.currentTarget.href }, callback(targetElement.href));
+// sendMessage callback
+var callback = function(url) {
+  return function(resp) {
+    if (resp) {
+      console.log('Opened URL: ', url, ' in a new incognito window.');
+    } else {
+      console.error('Failed to open the URL: ', url);
     }
-  }, false)
+  }
 }
+
+document.addEventListener('click', (evt) => {
+  var found = passedThrough(evt, 'a[target="linkognito"]');
+
+  if (found) {
+    evt.preventDefault();
+    let url = found.getAttribute('href')
+    if (!url.startsWith('http')) {
+      if (url.startsWith('/')){
+        url = `${window.location.origin}${url}`
+      } else {
+        url = `${window.location.href}/${url}`
+      }
+    }
+
+    browser.runtime.sendMessage({ url: url }, callback(url));
+  }
+});
