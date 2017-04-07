@@ -1,5 +1,5 @@
 var browser = chrome || browser;
-var links = document.querySelectorAll('a');
+var links = document.querySelectorAll('a[target="linkognito"]');
 
 const callback = function(url) {
   return function(resp) {
