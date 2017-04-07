@@ -37,7 +37,7 @@ function openIncognito(url) {
   });
 }
 
-browser.extension.onMessage.addListener(
+browser.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
     openIncognito(request.url);
     sendResponse(true);
