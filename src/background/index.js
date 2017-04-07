@@ -12,11 +12,12 @@ function openIncognito(url) {
       : "normal";
 
     if (incognitoWins.length > 0 && typeof incognitoWins[0].id !== "undefined") {
-      browser.tabs.create({ url: url, windowId: incognitoWins[0].id });
+      browser.tabs.create({ url: url, windowId: incognitoWins[0].id }, function(tab) {
+        browser.windows.update(tab.windowId, { focused: true });
+      });
     } else {
-      let incognitoWin = null;
       try {
-        incognitoWin = browser.windows.create(
+        browser.windows.create(
           {
             url: url,
             incognito: true,
@@ -27,15 +28,12 @@ function openIncognito(url) {
         );
       } catch (e) {
         console.log("Trying without `state`");
-        incognitoWin = browser.windows.create(
+        browser.windows.create(
           {
             url: url,
             incognito: true
           }
         );
-      }
-      if (incognitoWin) {
-        incognitoWin.focus();
       }
     }
   });
