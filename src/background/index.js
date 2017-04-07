@@ -12,7 +12,9 @@ function openIncognito(url) {
       : "normal";
 
     if (incognitoWins.length > 0 && typeof incognitoWins[0].id !== "undefined") {
-      browser.tabs.create({ url: url, windowId: incognitoWins[0].id });
+      browser.tabs.create({ url: url, windowId: incognitoWins[0].id }, function(tab) {
+        browser.windows.update(tab.windowId, { focused: true });
+      });
     } else {
       try {
         browser.windows.create(
@@ -37,7 +39,7 @@ function openIncognito(url) {
   });
 }
 
-browser.extension.onMessage.addListener(
+browser.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
     openIncognito(request.url);
     sendResponse(true);
