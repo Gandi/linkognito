@@ -14,8 +14,9 @@ function openIncognito(url) {
     if (incognitoWins.length > 0 && typeof incognitoWins[0].id !== "undefined") {
       browser.tabs.create({ url: url, windowId: incognitoWins[0].id });
     } else {
+      let incognitoWin = null;
       try {
-        browser.windows.create(
+        incognitoWin = browser.windows.create(
           {
             url: url,
             incognito: true,
@@ -26,12 +27,15 @@ function openIncognito(url) {
         );
       } catch (e) {
         console.log("Trying without `state`");
-        browser.windows.create(
+        incognitoWin = browser.windows.create(
           {
             url: url,
             incognito: true
           }
         );
+      }
+      if (incognitoWin) {
+        incognitoWin.focus();
       }
     }
   });

@@ -13,6 +13,7 @@ const callback = function(url) {
 
 for (var i = 0; i < links.length; i++) {
   links.item(i).addEventListener('click', function(evt) {
+    evt.preventDefault();
     var targetElement = evt.target;
 
     if (targetElement !== null) {
