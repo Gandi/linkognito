@@ -49,7 +49,7 @@ var callback = function(url) {
 
 document.addEventListener('click', (evt) => {
   if (!isRightButton(evt)) {
-    var found = passedThrough(evt, 'a[target="linkognito"]');
+    var found = passedThrough(evt, 'a.linkognito');
 
     if (found) {
       evt.preventDefault();
