@@ -27,6 +27,15 @@ function passedThrough(evt, selector) {
   }
 }
 
+function isRightButton(e) {
+  var e = e || window.event;
+  if (e.which == null) {
+    return e.button >= 2 && e.button !== 4; // 4 is the middle button
+  }
+
+  return e.which > 2;
+}
+
 // sendMessage callback
 var callback = function(url) {
   return function(resp) {
@@ -39,19 +48,21 @@ var callback = function(url) {
 }
 
 document.addEventListener('click', (evt) => {
-  var found = passedThrough(evt, 'a[target="linkognito"]');
+  if (!isRightButton(evt)) {
+    var found = passedThrough(evt, 'a[target="linkognito"]');
 
-  if (found) {
-    evt.preventDefault();
-    let url = found.getAttribute('href')
-    if (!url.startsWith('http')) {
-      if (url.startsWith('/')){
-        url = `${window.location.origin}${url}`
-      } else {
-        url = `${window.location.href}/${url}`
+    if (found) {
+      evt.preventDefault();
+      let url = found.getAttribute('href')
+      if (!url.startsWith('http')) {
+        if (url.startsWith('/')){
+          url = `${window.location.origin}${url}`
+        } else {
+          url = `${window.location.href}/${url}`
+        }
       }
-    }
 
-    browser.runtime.sendMessage({ url: url }, callback(url));
+      browser.runtime.sendMessage({ url: url }, callback(url));
+    }
   }
 });
