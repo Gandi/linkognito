@@ -2,13 +2,19 @@
 
   "manifest_version": 2,
   "name": "Linkognito",
-  "version": "1.0",
+  "version": "1.1",
 
   "description": "Open links in incognito mode",
 
   "icons": {
     "48": "icon.png",
     "96": "icon@2x.png"
+  },
+
+  "applications": {
+    "gecko": {
+      "id": "linkognito@gandi.net"
+    }
   },
 
   "background": {
