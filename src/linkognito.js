@@ -1,8 +1,11 @@
 var browser = chrome || browser;
 
 // define matches methode according to browser
-var elementProto = Element.prototype;
+var El = window.Element;
+var elementProto = El.prototype;
 var matchesFn = ['webkit', 'ms', 'moz', 'o'].reduce((func, prefix) => {
+  if (func) return func;
+
   var prefixedFuncName = `${prefix}MatchesSelector`;
   if (elementProto.hasOwnProperty(prefixedFuncName)) {
     return elementProto[prefixedFuncName];
@@ -14,17 +17,16 @@ var matchesFn = ['webkit', 'ms', 'moz', 'o'].reduce((func, prefix) => {
 // find node in terms of selector
 function passedThrough(evt, selector) {
   var currentNode = evt.target;
-  var stopAt = evt.currentTarget;
 
-  while (true) {
+  while (matchesFn && currentNode instanceof El) {
     if (matchesFn.call(currentNode, selector)) {
       return currentNode;
-    } else if (currentNode !== stopAt && currentNode !== document.body) {
-      currentNode = currentNode.parentNode;
-    } else {
-      return false;
     }
+
+    currentNode = currentNode.parentNode;
   }
+
+  return false;
 }
 
 function isRightButton(e) {
@@ -51,18 +53,18 @@ document.addEventListener('click', (evt) => {
   if (!isRightButton(evt)) {
     var found = passedThrough(evt, 'a.linkognito');
 
-    if (found) {
-      evt.preventDefault();
-      let url = found.getAttribute('href')
-      if (!url.startsWith('http')) {
-        if (url.startsWith('/')){
-          url = `${window.location.origin}${url}`
-        } else {
-          url = `${window.location.href}/${url}`
-        }
-      }
+    if (!found) return;
 
-      browser.runtime.sendMessage({ url: url }, callback(url));
+    evt.preventDefault();
+    let url = found.getAttribute('href')
+    if (!url.startsWith('http')) {
+      if (url.startsWith('/')){
+        url = `${window.location.origin}${url}`
+      } else {
+        url = `${window.location.href}/${url}`
+      }
     }
+
+    browser.runtime.sendMessage({ url: url }, callback(url));
   }
 });
