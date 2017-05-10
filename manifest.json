@@ -8,7 +8,8 @@
 
   "icons": {
     "48": "img/icon.png",
-    "96": "img/icon@2x.png"
+    "96": "img/icon@2x.png",
+    "128": "img/icon-128px.png"
   },
 
   "applications": {
