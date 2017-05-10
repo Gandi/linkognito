@@ -1,4 +1,4 @@
-# Linkognito
+# ![logo](img/icon.png?raw=True) Linkognito
 
 A browser extension to open all links with classname `linkognito` in a private
 browser window.
