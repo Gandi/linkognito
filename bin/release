@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# set -x
+
+VERSION="${1}"
+FILES="demo.html img LICENCE manifest.json README.md src"
+
+[[ -n "$VERSION" ]] || {
+	echo "You must pass expected version as first parameter";
+	exit 1;
+}
+
+git pull --rebase origin master
+
+# Update version
+sed -i "s/\(\"version\":\) \".*\"/\1 \"$VERSION\"/" "manifest.json"
+
+# Check everything looks ok
+git add -u
+git status
+git --no-pager diff --staged
+read -p 'Are those changes OK? Ready to commit/push? (y/N) ' -n 1 -r
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+  git reset HEAD
+	exit 1;
+fi
+echo ""
+
+# If ok, commit release
+git commit -m "Release ${VERSION}"
+git tag $VERSION
+git push origin master
+git push origin "refs/tags/${VERSION}"
+
+# And generate zip archive
+ls -l $FILES --color=auto
+read -p 'OK to zip these files? (y/N) ' -n 1 -r
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+	exit 1;
+fi
+echo ""
+
+[ -e linkognito.zip ] && rm linkognito.zip
+zip -r linkognito.zip demo.html img LICENCE manifest.json README.md src -x */.*
