@@ -3,7 +3,7 @@
 # set -x
 
 VERSION="${1}"
-FILES="demo.html img LICENCE manifest.json README.md src"
+FILES="img LICENCE manifest.json README.md src"
 
 [[ -n "$VERSION" ]] || {
 	echo "You must pass expected version as first parameter";
