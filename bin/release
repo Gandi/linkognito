@@ -27,12 +27,6 @@ then
 fi
 echo ""
 
-# If ok, commit release
-git commit -m "Release ${VERSION}"
-git tag $VERSION
-git push origin master
-git push origin "refs/tags/${VERSION}"
-
 # And generate zip archive
 ls -l $FILES --color=auto
 read -p 'OK to zip these files? (y/N) ' -n 1 -r
@@ -43,4 +37,16 @@ fi
 echo ""
 
 [ -e linkognito.zip ] && rm linkognito.zip
-zip -r linkognito.zip demo.html img LICENCE manifest.json README.md src -x */.*
+zip -r linkognito.zip $FILES -x */.*
+
+if [ ! -f linkognito.zip ]
+then
+  echo 'linkognito.zip not found'
+	exit 1;
+fi
+
+# If ok, commit release
+git commit -m "Release ${VERSION}"
+git tag $VERSION
+git push origin master
+git push origin "refs/tags/${VERSION}"
