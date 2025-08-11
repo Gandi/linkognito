@@ -19,7 +19,8 @@
   },
 
   "background": {
-    "service_worker": "src/background/index.js"
+    "service_worker": "src/background/index.js",
+	"scripts": ["src/background/index.js"]
   },
 
   "permissions": [
